@@ -64,7 +64,6 @@ for(i in 1:4){
   car_req_list[[i]] = merge(x = uni_abrev, y = car_req_list[[i]], by = "code_uni", all = TRUE)  
 }
 
-
 #asignacion_obtenida
 reg_sec_uni_13 = read.csv("Datos/PAUC 2013/Output/asignacion_obtenida_reg_secuencial_university_2013.csv", sep = ";", header=TRUE)
 bea_sec_uni_13 = read.csv("Datos/PAUC 2013/Output/asignacion_obtenida_bea_secuencial_university_2013.csv", sep = ";", header=TRUE)
@@ -78,16 +77,33 @@ bea_au_stu_16 = read.csv("Datos/PAUC 2016/Output/asignacion_obtenida_bea_unica_s
 reg_list = list(reg_sec_uni_13,reg_sec_uni_14,reg_au_stu_15,reg_au_stu_16)
 bea_list = list(bea_sec_uni_13,bea_sec_uni_14,bea_au_stu_15,bea_au_stu_16)
 
-#puntajes
-puntajes_13 = read.csv("Datos/PAUC 2013/Seleccion/puntajes.csv", sep = ";", header=TRUE)
-#These ones do not work because file is a txt with fixed size
-#puntajes_14 = read.csv("Datos/PAUC 2014/Seleccion/puntajes.csv", sep = ";", header=TRUE)
-#puntajes_15 = read.csv("Datos/PAUC 2015/Seleccion/puntajes.csv", sep = ";", header=TRUE)
-#puntajes_16 = read.csv("Datos/PAUC 2016/Seleccion/puntajes.csv", sep = ";", header=TRUE)
-puntajes_14 = data.frame("id_alumno" = c(1,2,3,4))
-puntajes_15 = data.frame("id_alumno" = c(1,2,3,4))
-puntajes_16 = data.frame("id_alumno" = c(1,2,3,4))
+#postulaciones_procesadas
+#Following the same assignment than for asignacion_obtenida
+post_reg_sec_uni_13 = read.csv("Datos/PAUC 2013/Output/postulaciones_procesadas_reg_university_secuencial_2013.csv", sep = ";", header=TRUE)
+post_bea_sec_uni_13 = read.csv("Datos/PAUC 2013/Output/postulaciones_procesadas_bea_university_secuencial_2013.csv", sep = ";", header=TRUE)
+post_reg_sec_uni_14 = read.csv("Datos/PAUC 2014/Output/postulaciones_procesadas_reg_university_secuencial_2014.csv", sep = ";", header=TRUE)
+post_bea_sec_uni_14 = read.csv("Datos/PAUC 2014/Output/postulaciones_procesadas_bea_university_secuencial_2014.csv", sep = ";", header=TRUE)
+post_reg_au_stu_15 = read.csv("Datos/PAUC 2015/Output/postulaciones_procesadas_reg_student_unica_2015.csv", sep = ";", header=TRUE)
+post_bea_au_stu_15 = read.csv("Datos/PAUC 2015/Output/postulaciones_procesadas_bea_student_unica_2015.csv", sep = ";", header=TRUE)
+post_reg_au_stu_16 = read.csv("Datos/PAUC 2016/Output/postulaciones_procesadas_reg_student_unica_2016.csv", sep = ";", header=TRUE)
+post_bea_au_stu_16 = read.csv("Datos/PAUC 2016/Output/postulaciones_procesadas_bea_student_unica_2016.csv", sep = ";", header=TRUE)
 
+post_reg_list = list(post_reg_sec_uni_13,post_reg_sec_uni_14,post_reg_au_stu_15,post_reg_au_stu_16)
+post_bea_list = list(post_bea_sec_uni_13,post_bea_sec_uni_14,post_bea_au_stu_15,post_bea_au_stu_16)
+
+#puntajes 
+#TODO: Here we need to change the puntajes file to a csv to be easier to read
+puntajes_13 = read.csv("Datos/PAUC 2013/Seleccion/puntajes.csv", sep = ";", header=TRUE)
+#These ones do not work because file is a txt with fixed size so Im just reading the id_alumno (if you want to do everytihng 
+# in one for you can use assing(varname, expression) and also use get(varname) + 34. Also you can just use list())
+#I do not use list immediately because then R studio doesnt show you the data in a nice format
+puntajes_14 = read.fwf("Datos/PAUC 2014/Seleccion/puntajes.txt", widths = 7, header=FALSE)
+puntajes_14 = data.frame("id_alumno" = puntajes_14[!is.na(puntajes_14)])
+puntajes_15 = read.fwf("Datos/PAUC 2015/Seleccion/puntajes.txt", widths = 7, header=FALSE)
+puntajes_15 = data.frame("id_alumno" = puntajes_15[!is.na(puntajes_15)])
+puntajes_16 = read.fwf("Datos/PAUC 2016/Seleccion/puntajes.txt", widths = 7, header=FALSE)
+puntajes_16 = data.frame("id_alumno" = puntajes_16[!is.na(puntajes_16)])
+#Create list()
 puntajes_list = list(puntajes_13, puntajes_14, puntajes_15, puntajes_16)
 
 # Aggregate stats ---------------------------------------------------------
@@ -98,13 +114,26 @@ for(i in 1:4){
   n_unis = nrow(unique(car_req_list[[i]]['code_uni']))
   vac_reg = sum(car_req_list[[i]][,'vacantes_reg'])
   vac_bea = sum(car_req_list[[i]][,'vacantes_bea'])
+  vac_assigned_reg = length(reg_list[[i]][reg_list[[i]]$marca == 24,'id_alumno'])
+  vac_assigned_bea = length(bea_list[[i]][bea_list[[i]]$marca == 24,'id_alumno'])
+  vac_assigned = vac_assigned_reg + vac_assigned_bea 
+  n_applications_reg = length(post_reg_list[[i]][,'id_alumno'])
+  n_applications_bea = length(post_bea_list[[i]][,'id_alumno'])
+  n_applications = n_applications_reg + n_applications_bea
   agg_stats[[i]] = data.frame("Candidates" = n_candidates, "Programs" = n_programs,
                               "Universities" = n_unis, "Regular_Vacancies" = vac_reg,
-                              "BEA_Vacancies" = vac_bea) 
+                              "BEA_Vacancies" = vac_bea, "Vacancies_assigned" = vac_assigned, 
+                              "Regular_Vacancies_assigned" = vac_assigned_reg, 
+                              "BEA_Vacancies_assigned" = vac_assigned_bea, 
+                              "Regular_applications" = n_applications_reg, 
+                              "BEA_applications" = n_applications_bea,
+                              "Applications" = n_applications) 
 }
-#Getting the column names of the data frame, with spaces
+#Getting the column names of the data table with spaces. Need to be in the same order as variables in agg_stats
 agg_stats_edit_colnames = c("Candidates","Programs","Universities",
-                      "Regular Vacancies","BEA Vacancies")
+                      "Regular vacancies","BEA vacancies", "Vacancies assigned", 
+                      "Reg Vacancies assigned", "BEA Vacancies assigned", 
+                      "Regular applications", "BEA applications","Applications")
 
 # Latex tables ------------------------------------------------------------
 #Aggregate statistics from the Admission Process
@@ -120,7 +149,8 @@ table_header = c("\\begin{table}[H]",
 table_body = c("   & 2013 & 2014 & 2015 & 2016 \\\\" ," \\midrule")
 space = '\\\\[0pt]'
 for(i in 1:length(names(agg_stats[[1]]))){
-  row = paste(agg_stats_edit_colnames[i],"&", agg_stats[[1]][i],"&",agg_stats[[2]][i],'&',agg_stats[[3]][i],'&',agg_stats[[4]][i],space)
+  row = paste(agg_stats_edit_colnames[i],"&", agg_stats[[1]][i],"&",agg_stats[[2]][i],'&',agg_stats[[3]][i],
+              '&',agg_stats[[4]][i],space)
   table_body = c(table_body, row)  
 }
 table_footer = c("\\bottomrule",
