@@ -92,17 +92,11 @@ post_reg_list = list(post_reg_sec_uni_13,post_reg_sec_uni_14,post_reg_au_stu_15,
 post_bea_list = list(post_bea_sec_uni_13,post_bea_sec_uni_14,post_bea_au_stu_15,post_bea_au_stu_16)
 
 #puntajes 
-#TODO: Here we need to change the puntajes file to a csv to be easier to read
-puntajes_13 = read.csv("Datos/PAUC 2013/Seleccion/puntajes.csv", sep = ";", header=TRUE)
-#These ones do not work because file is a txt with fixed size so Im just reading the id_alumno (if you want to do everytihng 
-# in one for you can use assing(varname, expression) and also use get(varname) + 34. Also you can just use list())
-#I do not use list immediately because then R studio doesnt show you the data in a nice format
-puntajes_14 = read.fwf("Datos/PAUC 2014/Seleccion/puntajes.txt", widths = 7, header=FALSE)
-puntajes_14 = data.frame("id_alumno" = puntajes_14[!is.na(puntajes_14)])
-puntajes_15 = read.fwf("Datos/PAUC 2015/Seleccion/puntajes.txt", widths = 7, header=FALSE)
-puntajes_15 = data.frame("id_alumno" = puntajes_15[!is.na(puntajes_15)])
-puntajes_16 = read.fwf("Datos/PAUC 2016/Seleccion/puntajes.txt", widths = 7, header=FALSE)
-puntajes_16 = data.frame("id_alumno" = puntajes_16[!is.na(puntajes_16)])
+puntajes_13 = read.csv("Datos/PAUC 2013/Seleccion/puntajes_2013.csv", sep = ";", header=TRUE)
+puntajes_14 = read.csv("Datos/PAUC 2014/Seleccion/puntajes_2014.csv", sep = ";", header=TRUE)
+puntajes_15 = read.csv("Datos/PAUC 2015/Seleccion/puntajes_2015.csv", sep = ";", header=TRUE)
+puntajes_16 = read.csv("Datos/PAUC 2016/Seleccion/puntajes_2016.csv", sep = ";", header=TRUE)
+
 #Create list()
 puntajes_list = list(puntajes_13, puntajes_14, puntajes_15, puntajes_16)
 
@@ -136,6 +130,13 @@ agg_stats_edit_colnames = c("Candidates","Programs","Universities",
                       "Regular applications", "BEA applications","Applications")
 
 # Latex tables ------------------------------------------------------------
+#Create short function for formatting numbers
+
+ f = function (x){
+   aux = prettyNum(as.numeric(x),big.mark=",",scientific=FALSE)
+  return(aux)
+}
+
 #Aggregate statistics from the Admission Process
 table_latex = file("Paper/in-prep/tables/agg_stats_13_16.tex")
 table_header = c("\\begin{table}[H]", 
@@ -149,8 +150,9 @@ table_header = c("\\begin{table}[H]",
 table_body = c("   & 2013 & 2014 & 2015 & 2016 \\\\" ," \\midrule")
 space = '\\\\[0pt]'
 for(i in 1:length(names(agg_stats[[1]]))){
-  row = paste(agg_stats_edit_colnames[i],"&", agg_stats[[1]][i],"&",agg_stats[[2]][i],'&',agg_stats[[3]][i],
-              '&',agg_stats[[4]][i],space)
+  row = paste(agg_stats_edit_colnames[i],"&", f(agg_stats[[1]][i]),"&",
+              f(agg_stats[[2]][i]),'&',f(agg_stats[[3]][i]),
+              '&',f(agg_stats[[4]][i]),space)
   table_body = c(table_body, row)  
 }
 table_footer = c("\\bottomrule",
