@@ -64,7 +64,7 @@ for(i in 1:4){
   car_req_list[[i]] = merge(x = uni_abrev, y = car_req_list[[i]], by = "code_uni", all = TRUE)  
 }
 
-#asignacion_obtenida
+#asignacion_obtenida (process run in that year)
 reg_sec_uni_13 = read.csv("Datos/PAUC 2013/Output/asignacion_obtenida_reg_secuencial_university_2013.csv", sep = ";", header=TRUE)
 bea_sec_uni_13 = read.csv("Datos/PAUC 2013/Output/asignacion_obtenida_bea_secuencial_university_2013.csv", sep = ";", header=TRUE)
 reg_sec_uni_14 = read.csv("Datos/PAUC 2014/Output/asignacion_obtenida_reg_secuencial_university_2014.csv", sep = ";", header=TRUE)
@@ -130,12 +130,8 @@ agg_stats_edit_colnames = c("Candidates","Programs","Universities",
                       "Regular applications", "BEA applications","Applications")
 
 # Latex tables ------------------------------------------------------------
-#Create short function for formatting numbers
-
- f = function (x){
-   aux = prettyNum(as.numeric(x),big.mark=",",scientific=FALSE)
-  return(aux)
-}
+#Source short function for formatting numbers
+source("Codigos/R/Algorithm/lib/Functions_PaperDEMRE.R")
 
 #Aggregate statistics from the Admission Process
 table_latex = file("Paper/in-prep/tables/agg_stats_13_16.tex")
@@ -161,5 +157,7 @@ table_footer = c("\\bottomrule",
                  "\\end{table}")
 writeLines(c(table_header, table_body, table_footer), table_latex)
 close(table_latex)
+
+
 
 
