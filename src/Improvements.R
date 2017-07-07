@@ -48,6 +48,16 @@ puntajes_15 = read.csv("Datos/PAUC 2015/Seleccion/puntajes_2015.csv", sep = ";",
 puntajes_16 = read.csv("Datos/PAUC 2016/Seleccion/puntajes_2016.csv", sep = ";", header=TRUE)
 puntajes_list = list(puntajes_14, puntajes_15, puntajes_16)
 
+#BEA
+bea_14 = read.csv("Datos/PAUC 2014/Seleccion/alumnos_BEA.csv", sep = ";", header=TRUE)
+bea_15 = read.csv("Datos/PAUC 2015/Seleccion/alumnos_BEA.csv", sep = ";", header=TRUE)
+bea_16 = read.csv("Datos/PAUC 2016/Seleccion/alumnos_BEA.csv", sep = ";", header=TRUE)
+bea_list = list(bea_14, bea_15, bea_16)
+#Relabelling
+for(i in 1:3){
+  names(bea_list[[i]])[names(bea_list[[i]]) == 'Ident' | 
+                         names(bea_list[[i]]) =='INS_SECUENCIA'] = 'id_alumno' 
+}
 
 # Merging and comparing datasets ------------------------------------------
 #Double assignment by year
@@ -80,11 +90,17 @@ for(i in 1:3){
   compared_assignment[[i]]$process = as.character(2013 + i)
 }
 
-# Plotting results --------------------------------------------------------
+#Subsetting in data with improvements and data with new assigned
 #If you want to view specific elements of the list as data frames, do View(compared_assignment[[i]])
 d = rbind(compared_assignment[[1]],compared_assignment[[2]],compared_assignment[[3]])
 #Next line is neccesary because there are new assigned students and for those pref_sec is NA in the merge
 d_not_na = d[d$improve != '0' & !is.na(d$pref_sec),]
+
+#Merging with BEA and scores
+#TODO: merge with scores and BEA list to characterize
+
+# Plotting results --------------------------------------------------------
+
 #Plot improvements pooling years without NA
 ggplot(d_not_na , aes(x = improve)) + 
   geom_bar(stat = 'count') +  
