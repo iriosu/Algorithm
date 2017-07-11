@@ -78,18 +78,22 @@ reg_list = list(reg_sec_uni_13,reg_sec_uni_14,reg_au_stu_15,reg_au_stu_16)
 bea_list = list(bea_sec_uni_13,bea_sec_uni_14,bea_au_stu_15,bea_au_stu_16)
 
 #postulaciones_procesadas
-#Following the same assignment than for asignacion_obtenida
-post_reg_sec_uni_13 = read.csv("Datos/PAUC 2013/Output/postulaciones_procesadas_reg_university_secuencial_2013.csv", sep = ";", header=TRUE)
-post_bea_sec_uni_13 = read.csv("Datos/PAUC 2013/Output/postulaciones_procesadas_bea_university_secuencial_2013.csv", sep = ";", header=TRUE)
-post_reg_sec_uni_14 = read.csv("Datos/PAUC 2014/Output/postulaciones_procesadas_reg_university_secuencial_2014.csv", sep = ";", header=TRUE)
-post_bea_sec_uni_14 = read.csv("Datos/PAUC 2014/Output/postulaciones_procesadas_bea_university_secuencial_2014.csv", sep = ";", header=TRUE)
+# NOT Following the same assignment than for asignacion_obtenida
+#Here we are reading the Unique assignment because applications shouldn't be affected by this
+#Becareful here, the file of applications has BEA people in both, reg and bea posts even in the unique assignment 
+#So we shouldn't use this for assignement purposes!
+post_reg_au_stu_13 = read.csv("Datos/PAUC 2013/Output/postulaciones_procesadas_reg_student_unica_2013.csv", sep = ";", header=TRUE)
+post_bea_au_stu_13 = read.csv("Datos/PAUC 2013/Output/postulaciones_procesadas_bea_student_unica_2013.csv", sep = ";", header=TRUE)
+post_reg_au_stu_14 = read.csv("Datos/PAUC 2014/Output/postulaciones_procesadas_reg_student_unica_2014.csv", sep = ";", header=TRUE)
+post_bea_au_stu_14 = read.csv("Datos/PAUC 2014/Output/postulaciones_procesadas_bea_student_unica_2014.csv", sep = ";", header=TRUE)
 post_reg_au_stu_15 = read.csv("Datos/PAUC 2015/Output/postulaciones_procesadas_reg_student_unica_2015.csv", sep = ";", header=TRUE)
 post_bea_au_stu_15 = read.csv("Datos/PAUC 2015/Output/postulaciones_procesadas_bea_student_unica_2015.csv", sep = ";", header=TRUE)
 post_reg_au_stu_16 = read.csv("Datos/PAUC 2016/Output/postulaciones_procesadas_reg_student_unica_2016.csv", sep = ";", header=TRUE)
 post_bea_au_stu_16 = read.csv("Datos/PAUC 2016/Output/postulaciones_procesadas_bea_student_unica_2016.csv", sep = ";", header=TRUE)
 
-post_reg_list = list(post_reg_sec_uni_13,post_reg_sec_uni_14,post_reg_au_stu_15,post_reg_au_stu_16)
-post_bea_list = list(post_bea_sec_uni_13,post_bea_sec_uni_14,post_bea_au_stu_15,post_bea_au_stu_16)
+#As we have BEA students in both tracks, we need to keep track of this later
+post_reg_list = list(post_reg_au_stu_13,post_reg_au_stu_14,post_reg_au_stu_15,post_reg_au_stu_16)
+post_bea_list = list(post_bea_au_stu_13,post_bea_au_stu_14,post_bea_au_stu_15,post_bea_au_stu_16)
 
 #puntajes 
 puntajes_13 = read.csv("Datos/PAUC 2013/Seleccion/puntajes_2013.csv", sep = ";", header=TRUE)
@@ -97,24 +101,42 @@ puntajes_14 = read.csv("Datos/PAUC 2014/Seleccion/puntajes_2014.csv", sep = ";",
 puntajes_15 = read.csv("Datos/PAUC 2015/Seleccion/puntajes_2015.csv", sep = ";", header=TRUE)
 puntajes_16 = read.csv("Datos/PAUC 2016/Seleccion/puntajes_2016.csv", sep = ";", header=TRUE)
 
-#Create list()
 puntajes_list = list(puntajes_13, puntajes_14, puntajes_15, puntajes_16)
+
+#BEA
+bea_13 = read.csv("Datos/PAUC 2013/Seleccion/alumnos_BEA.csv", sep = ";", header=TRUE)
+bea_14 = read.csv("Datos/PAUC 2014/Seleccion/alumnos_BEA.csv", sep = ";", header=TRUE)
+bea_15 = read.csv("Datos/PAUC 2015/Seleccion/alumnos_BEA.csv", sep = ";", header=TRUE)
+bea_16 = read.csv("Datos/PAUC 2016/Seleccion/alumnos_BEA.csv", sep = ";", header=TRUE)
+bea_candidates = list(bea_13, bea_14, bea_15, bea_16)
+#Relabelling
+for(i in 1:4){
+  names(bea_candidates[[i]])[names(bea_candidates[[i]]) %in% c('Ident','INS_SECUENCIA','ID')] = 'id_alumno' 
+}
 
 # Aggregate stats ---------------------------------------------------------
 agg_stats = list()
 for(i in 1:4){
-  n_candidates = nrow(unique(puntajes_list[[i]]['id_alumno']))
+  d = puntajes_list[[i]]
+  n_candidates_bea = length(d[d[,'id_alumno'] %in% bea_candidates[[i]][,'id_alumno'],'id_alumno'])
+  n_candidates_reg = length(d[!d[,'id_alumno'] %in% bea_candidates[[i]][,'id_alumno'],'id_alumno'])
   n_programs = nrow(unique(car_req_list[[i]]['codigo_carrera']))
   n_unis = nrow(unique(car_req_list[[i]]['code_uni']))
   vac_reg = sum(car_req_list[[i]][,'vacantes_reg'])
   vac_bea = sum(car_req_list[[i]][,'vacantes_bea'])
   vac_assigned_reg = length(reg_list[[i]][reg_list[[i]]$marca == 24,'id_alumno'])
   vac_assigned_bea = length(bea_list[[i]][bea_list[[i]]$marca == 24,'id_alumno'])
-  vac_assigned = vac_assigned_reg + vac_assigned_bea 
-  n_applications_reg = length(post_reg_list[[i]][,'id_alumno'])
-  n_applications_bea = length(post_bea_list[[i]][,'id_alumno'])
+  vac_assigned = vac_assigned_reg + vac_assigned_bea
+  #The next lines have to count BEA applicants not aplications under the BEA track
+  d_reg = post_reg_list[[i]]
+  d_bea = post_bea_list[[i]]
+  #TODO: Review this with Ignacio
+  n_applications_reg = length(d_reg[!d_reg[,'id_alumno'] %in% bea_candidates[[i]][,'id_alumno'],'id_alumno']) #unique is not neccesary for regulars
+  n_applications_bea = length(unique(rbind(d_reg[d_reg[,'id_alumno'] %in% bea_candidates[[i]][,'id_alumno'],'id_alumno'],
+                             d_bea[d_bea[,'id_alumno'] %in% bea_candidates[[i]][,'id_alumno'],'id_alumno'])))
   n_applications = n_applications_reg + n_applications_bea
-  agg_stats[[i]] = data.frame("Candidates" = n_candidates, "Programs" = n_programs,
+  agg_stats[[i]] = data.frame("Candidates_Reg" = n_candidates_reg, 
+                              "Candidates_BEA" = n_candidates_bea,"Programs" = n_programs,
                               "Universities" = n_unis, "Regular_Vacancies" = vac_reg,
                               "BEA_Vacancies" = vac_bea, "Vacancies_assigned" = vac_assigned, 
                               "Regular_Vacancies_assigned" = vac_assigned_reg, 
@@ -124,7 +146,7 @@ for(i in 1:4){
                               "Applications" = n_applications) 
 }
 #Getting the column names of the data table with spaces. Need to be in the same order as variables in agg_stats
-agg_stats_edit_colnames = c("Candidates","Programs","Universities",
+agg_stats_edit_colnames = c("Regular candidates","BEA candidates","Programs","Universities",
                       "Regular vacancies","BEA vacancies", "Vacancies assigned", 
                       "Reg Vacancies assigned", "BEA Vacancies assigned", 
                       "Regular applications", "BEA applications","Applications")
