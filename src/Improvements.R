@@ -178,16 +178,16 @@ table_header = c("\\begin{table}[H]",
                  "\\caption{Impact of Unified Assignment 2014-2016}", 
                  "\\label{tab: improvements}", 
                  "\\scalebox{1}{", 
-                 "\\begin{tabular}{lccccc}",
+                 "\\begin{tabular}{lcccc}",
                  "\\toprule", 
                  "\\toprule")
-table_body = c("   & 2014 & 2015 & 2016 & Total \\\\" ," \\midrule")
+table_body = c("   & 2014 & 2015 & 2016 \\\\" ," \\midrule")
 space = '\\\\[0pt]'
 for(i in 1:length(names(agg_stats[[1]]))){
   #Compute total by row
-  total = agg_stats[[1]][i] + agg_stats[[2]][i] + agg_stats[[3]][i]
+  #total = agg_stats[[1]][i] + agg_stats[[2]][i] + agg_stats[[3]][i]
   row = paste(agg_stats_edit_rownames[i],"&", f(agg_stats[[1]][i]),"&",
-              f(agg_stats[[2]][i]),'&',f(agg_stats[[3]][i]),'&',f(total),space)
+              f(agg_stats[[2]][i]),'&',f(agg_stats[[3]][i]),space)
   table_body = c(table_body, row)  
 }
 table_footer = c("\\bottomrule",
@@ -213,11 +213,10 @@ for(i in 1:3){#Iterate over group list, not over years this time
   mean_num_post = mean(d$num_post)
   charac_stats[[i]] = data.frame("Regular_students" = n_reg, 
                                  "BEA_students" = n_bea,
-                                 "Mean_Math_Lan" = round(mean_score_math_lan, digits=0),
                                  "Mean_num_post" = round(mean_num_post, digits=1))
 }
 #Getting the row names of the data table with spaces. Need to be in the same order as variables in agg_stats
-charac_stats_edit_rownames = c("Regular students","BEA students", "Mean Math-Lan", "Mean Total Applications")
+charac_stats_edit_rownames = c("Regular students","BEA students", "Mean Total Applications")
 
 # Latex table Agg stats of improvements ------------------------------------------------------------
 #Characterization of of groups
