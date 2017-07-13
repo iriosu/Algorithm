@@ -113,9 +113,9 @@ for(i in 1:3){
   pooled_assignment[[i]] = merge(x = reg_sec[[i]][reg_sec[[i]]$marca==24,], 
                                y = bea_sec[[i]][bea_sec[[i]]$marca==24,], 
                                by = "id_alumno", all = TRUE)[,c("id_alumno","pref.x","pref.y")]
-  pooled_assignment[[i]][is.na(pooled_assignment[[i]]$pref.x),"pref.x"] = 0
-  pooled_assignment[[i]][is.na(pooled_assignment[[i]]$pref.y),"pref.y"] = 0
-  pooled_assignment[[i]]$pref_sec = pmax(pooled_assignment[[i]]$pref.x,pooled_assignment[[i]]$pref.y) 
+  pooled_assignment[[i]][is.na(pooled_assignment[[i]]$pref.x),"pref.x"] = 11
+  pooled_assignment[[i]][is.na(pooled_assignment[[i]]$pref.y),"pref.y"] = 11
+  pooled_assignment[[i]]$pref_sec = pmin(pooled_assignment[[i]]$pref.x,pooled_assignment[[i]]$pref.y) 
   pooled_assignment[[i]] = pooled_assignment[[i]][, c("id_alumno","pref_sec")]
   #appending unified data
   unified_assignment[[i]] = rbind(reg_au[[i]], bea_au[[i]])
