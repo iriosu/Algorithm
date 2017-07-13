@@ -146,7 +146,7 @@ for(i in 1:4){
                               "Applications" = n_applications) 
 }
 #Getting the column names of the data table with spaces. Need to be in the same order as variables in agg_stats
-agg_stats_edit_colnames = c("Regular candidates","BEA candidates","Programs","Universities",
+agg_stats_edit_rownames = c("Regular candidates","BEA candidates","Programs","Universities",
                       "Regular vacancies","BEA vacancies", "Vacancies assigned", 
                       "Reg Vacancies assigned", "BEA Vacancies assigned", 
                       "Regular applications", "BEA applications","Applications")
@@ -168,7 +168,7 @@ table_header = c("\\begin{table}[H]",
 table_body = c("   & 2013 & 2014 & 2015 & 2016 \\\\" ," \\midrule")
 space = '\\\\[0pt]'
 for(i in 1:length(names(agg_stats[[1]]))){
-  row = paste(agg_stats_edit_colnames[i],"&", f(agg_stats[[1]][i]),"&",
+  row = paste(agg_stats_edit_rownames[i],"&", f(agg_stats[[1]][i]),"&",
               f(agg_stats[[2]][i]),'&',f(agg_stats[[3]][i]),
               '&',f(agg_stats[[4]][i]),space)
   table_body = c(table_body, row)  
