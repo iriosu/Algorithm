@@ -14,7 +14,7 @@ library(truncnorm)
 # Directory ---------------------------------------------------------------
 
 #root_dir = 'C:/'
-root_dir = '/home/tlarroucau/'
+root_dir = '/Users/irios/'
 drop_dir = 'Dropbox/PaperDEMRE/'
 setwd(paste(c(root_dir,drop_dir), collapse = ""))
 
@@ -69,13 +69,17 @@ reg_sec_uni_13 = read.csv("Datos/PAUC 2013/Output/asignacion_obtenida_reg_secuen
 bea_sec_uni_13 = read.csv("Datos/PAUC 2013/Output/asignacion_obtenida_bea_secuencial_university_2013.csv", sep = ";", header=TRUE)
 reg_sec_uni_14 = read.csv("Datos/PAUC 2014/Output/asignacion_obtenida_reg_secuencial_university_2014.csv", sep = ";", header=TRUE)
 bea_sec_uni_14 = read.csv("Datos/PAUC 2014/Output/asignacion_obtenida_bea_secuencial_university_2014.csv", sep = ";", header=TRUE)
-reg_au_stu_15 = read.csv("Datos/PAUC 2015/Output/asignacion_obtenida_reg_unica_student_2015.csv", sep = ";", header=TRUE)
-bea_au_stu_15 = read.csv("Datos/PAUC 2015/Output/asignacion_obtenida_bea_unica_student_2015.csv", sep = ";", header=TRUE)
+reg_sec_uni_15 = read.csv("Datos/PAUC 2015/Output/asignacion_obtenida_reg_secuencial_university_2015.csv", sep = ";", header=TRUE)
+bea_sec_uni_15 = read.csv("Datos/PAUC 2015/Output/asignacion_obtenida_bea_secuencial_university_2015.csv", sep = ";", header=TRUE)
 reg_au_stu_16 = read.csv("Datos/PAUC 2016/Output/asignacion_obtenida_reg_unica_student_2016.csv", sep = ";", header=TRUE)
 bea_au_stu_16 = read.csv("Datos/PAUC 2016/Output/asignacion_obtenida_bea_unica_student_2016.csv", sep = ";", header=TRUE)
 
-reg_list = list(reg_sec_uni_13,reg_sec_uni_14,reg_au_stu_15,reg_au_stu_16)
-bea_list = list(bea_sec_uni_13,bea_sec_uni_14,bea_au_stu_15,bea_au_stu_16)
+
+##############################
+#### MAIN CHANGE - iriosu ####
+##############################
+reg_list = list(reg_sec_uni_13,reg_sec_uni_14,reg_sec_uni_15,reg_au_stu_16)
+bea_list = list(bea_sec_uni_13,bea_sec_uni_14,bea_sec_uni_15,bea_au_stu_16)
 
 #postulaciones_procesadas
 # NOT Following the same assignment than for asignacion_obtenida
@@ -133,7 +137,7 @@ for(i in 1:4){
   #TODO: Review this with Ignacio
   n_applications_reg = length(d_reg[!d_reg[,'id_alumno'] %in% bea_candidates[[i]][,'id_alumno'],'id_alumno']) #unique is not neccesary for regulars
   n_applications_bea = length(unique(rbind(d_reg[d_reg[,'id_alumno'] %in% bea_candidates[[i]][,'id_alumno'],'id_alumno'],
-                             d_bea[d_bea[,'id_alumno'] %in% bea_candidates[[i]][,'id_alumno'],'id_alumno'])))
+                                           d_bea[d_bea[,'id_alumno'] %in% bea_candidates[[i]][,'id_alumno'],'id_alumno'])))
   n_applications = n_applications_reg + n_applications_bea
   agg_stats[[i]] = data.frame("Candidates_Reg" = n_candidates_reg, 
                               "Candidates_BEA" = n_candidates_bea,"Programs" = n_programs,
@@ -147,9 +151,9 @@ for(i in 1:4){
 }
 #Getting the column names of the data table with spaces. Need to be in the same order as variables in agg_stats
 agg_stats_edit_rownames = c("Regular candidates","BEA candidates","Programs","Universities",
-                      "Regular vacancies","BEA vacancies", "Vacancies assigned", 
-                      "Reg Vacancies assigned", "BEA Vacancies assigned", 
-                      "Regular applications", "BEA applications","Applications")
+                            "Regular vacancies","BEA vacancies", "Vacancies assigned", 
+                            "Reg Vacancies assigned", "BEA Vacancies assigned", 
+                            "Regular applications", "BEA applications","Applications")
 
 # Latex tables ------------------------------------------------------------
 #Source short function for formatting numbers
@@ -179,7 +183,3 @@ table_footer = c("\\bottomrule",
                  "\\end{table}")
 writeLines(c(table_header, table_body, table_footer), table_latex)
 close(table_latex)
-
-
-
-
