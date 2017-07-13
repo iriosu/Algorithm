@@ -46,6 +46,6 @@ data = rbind(post_req_13,post_req_14,post_req_15,post_req_16)
 ggplot(data , aes(x = app_count, group=year,fill=year)) +
   geom_bar(position="dodge",alpha=0.5, aes(y = (..prop..), group=year)) +
   xlab("Number of applications") +
-  ylab("Frequency") +
+  ylab("Percentage") +
   scale_x_continuous(breaks = round(seq(1, 10, by = 1),1)) +
   ggsave(file="Paper/in-prep/figures/number_apps_per_student_2013.pdf", width=10, height=5)
